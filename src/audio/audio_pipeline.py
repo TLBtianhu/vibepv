@@ -5,8 +5,9 @@ VibePV 完整音频分析管线（自动合并版）
       python src/audio/audio_pipeline.py test_audio/song.wav output/analysis.json --bpm 140 --multiplier 0.672
 """
 
-import sys, json, os
+import sys, json, os, shutil
 from multiprocessing import Process
+import librosa  # 用于获取音频时长
 
 # ========== 默认合并倍率 ==========
 DEFAULT_MULTIPLIER = 0.672
@@ -108,14 +109,26 @@ def run():
     bpm = bpm_data["detected_bpm"]
     sentences_data = merge_sentences(aligned_lyrics_path, bpm, multiplier)
 
-    # 组装最终输出（同时保留逐字和逐句两种粒度）
+    # 读取音频时长（毫秒）
+    y, sr = librosa.load(audio_path, sr=None)
+    audio_duration_ms = int(len(y) / sr * 1000)
+
+    # 自动拷贝音频到 Remotion 的 public 目录
+    remotion_public = os.path.join("src", "renderer", "public")
+    os.makedirs(remotion_public, exist_ok=True)
+    shutil.copy2(audio_path, os.path.join(remotion_public, os.path.basename(audio_path)))
+    print(f"[VibePV] 音频已自动拷贝到 {remotion_public}")
+
+    # 组装最终输出
     output = {
         "lyrics": {
-            "words": words_data,        # 逐字（卡拉OK逐字高亮用）
-            "sentences": sentences_data # 逐句（滚动字幕用）
+            "words": words_data,
+            "sentences": sentences_data
         },
         "bpm": bpm_data,
-        "merge_multiplier": multiplier  # 记录合并倍率，方便追溯
+        "merge_multiplier": multiplier,
+        "audio_duration_ms": audio_duration_ms,
+        "audio_file": os.path.basename(audio_path)  # 只存文件名，供 staticFile 使用
     }
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -125,6 +138,8 @@ def run():
     print(f"  - 逐字歌词: {len(words_data)} 段")
     print(f"  - 逐句歌词: {len(sentences_data)} 段")
     print(f"  - BPM: {bpm}")
+    print(f"  - 音频时长: {audio_duration_ms}ms")
+    print(f"  - 音频文件: {os.path.basename(audio_path)}")
 
 if __name__ == "__main__":
     run()
