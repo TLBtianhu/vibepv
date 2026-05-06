@@ -1,14 +1,12 @@
-﻿# 🚧 VibePV - Under Construction
+﻿# 🎬 VibePV - AI 驱动的歌词可视化 PV 创作工具
 
-AI 驱动的 PV 创作工具，目前处于早期开发阶段，API 随时可能变化，请勿用于生产环境。
+> **当前状态**：核心闭环已跑通，处于功能完善与体验优化阶段。
 
-## 当前进度
-- [x] 歌词识别 + BPM 检测
-- [x] 句子自动合并
-- [ ] Remotion 渲染
-- [ ] Agent 动效生成
+VibePV 是一个开源的 AI 辅助音乐可视化创作工具，通过本地 AI 模型分析音频生成精确的歌词时间轴和节拍数据，再由大语言模型 (LLM) Agent 根据你的风格描述生成视觉动效参数，最终通过 Remotion 渲染成带有滚动字幕和动态效果的 MV。
 
-## 快速开始
-```bash
-pip install -r requirements.txt
-python src/audio/audio_pipeline.py song.wav output/analysis.json
+## ✨ 核心能力
+
+- **全离线音频分析**：基于 Qwen3-ASR + ForcedAligner，一键生成逐字/逐句歌词时间戳（毫秒级精度），无需联网。
+- **智能风格设计**：用自然语言描述你想要的风格（如“赛博朋克，霓虹灯色调”），DeepSeek V4 Agent 自动生成配套的视觉参数。
+- **自动化视频渲染**：通过 Remotion 引擎，将歌词、音频和视觉参数合成为 1080P 高清视频，支持自定义字体、颜色和动效。
+- **开放生态**：产物为标准 JSON 格式，可二次开发，支持社区分享风格预设。

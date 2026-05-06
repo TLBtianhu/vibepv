@@ -29,7 +29,7 @@ export interface VisualParams {
 }
 
 // ====== 最终传入组件的完整 Props ======
-export interface VibePVProps {
+export type VibePVProps = {
   lyrics: {
     words: WordTimestamp[];
     sentences: SentenceTimestamp[];
@@ -39,4 +39,35 @@ export interface VibePVProps {
   audio_duration_ms: number;
   audio_file: string;
   visual_params: VisualParams;
-}
+};
+
+// ====== VisualPlan 类型定义 ======
+
+// 效果规则：一条规则描述一个视觉元素
+export type EffectRule = {
+  effectId: string;
+  type: "component" | "custom";
+  layer: number;
+  component?: string;
+  target?: "canvas";
+  dataSource?: "audio:spectrum";
+  params: Record<string, unknown>;
+  animation?: {
+    type: "spring";
+    config: Record<string, number>;
+  };
+  renderLogic?: string;
+  timeline: {
+    start: number;
+    end: number;
+  };
+};
+
+// 视觉计划：Agent 输出的顶层结构
+export type VisualPlan = {
+  metadata: {
+    style: string;
+    description: string;
+  };
+  rules: EffectRule[];
+};

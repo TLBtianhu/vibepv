@@ -1,14 +1,21 @@
 ﻿import { useCurrentFrame, useVideoConfig, Audio, staticFile } from "remotion";
-import type { AnalysisData } from "./types";
+import { useAudioData, visualizeAudio } from "@remotion/media-utils";
+import type { VibePVProps } from "./types";
 
-export const LyricsVideo: React.FC<AnalysisData> = ({
+export const LyricsVideo: React.FC<VibePVProps> = ({
   lyrics,
   bpm,
   audio_file,
+  visual_params,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const currentTimeMs = (frame / fps) * 1000;
+
+  const audioData = useAudioData(staticFile(audio_file));
+  const spectrum = audioData
+    ? visualizeAudio({ fps, frame, audioData, numberOfSamples: 32 })
+    : null;
 
   const currentSentence = lyrics.sentences.find(
     (s) => currentTimeMs >= s.start_ms && currentTimeMs <= s.end_ms
@@ -23,9 +30,8 @@ export const LyricsVideo: React.FC<AnalysisData> = ({
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
-        background: "linear-gradient(135deg, #0a0a2a, #1a1a4a)",
+        position: "absolute",
+        inset: 0,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -33,9 +39,9 @@ export const LyricsVideo: React.FC<AnalysisData> = ({
         fontFamily: "PingFang SC, Microsoft YaHei, sans-serif",
         color: "white",
         padding: "80px",
+        zIndex: 1,
       }}
     >
-      {/* 从 public 目录加载音频文件 */}
       {audio_file ? <Audio src={staticFile(audio_file)} /> : null}
 
       <div
@@ -50,6 +56,7 @@ export const LyricsVideo: React.FC<AnalysisData> = ({
       >
         {currentSentence?.text ?? "♬"}
       </div>
+
       {nextSentence && (
         <div
           style={{
@@ -61,6 +68,40 @@ export const LyricsVideo: React.FC<AnalysisData> = ({
           {nextSentence.text}
         </div>
       )}
+
+      {spectrum && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "120px",
+            left: 0,
+            right: 0,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+            gap: "4px",
+            height: "80px",
+          }}
+        >
+          {spectrum.map((value, index) => {
+            const barColor = visual_params.color_scheme?.[1] || "#ff00ff";
+            const height = Math.max(2, value * 80);
+            return (
+              <div
+                key={index}
+                style={{
+                  width: "8px",
+                  height: `${height}px`,
+                  backgroundColor: barColor,
+                  borderRadius: "4px",
+                  transition: "height 0.1s ease",
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
+
       <div
         style={{
           position: "absolute",
@@ -70,7 +111,7 @@ export const LyricsVideo: React.FC<AnalysisData> = ({
           opacity: 0.3,
         }}
       >
-        BPM {bpm.detected_bpm}
+        BPM {bpm.detected_bpm} | {visual_params.particle_speed}
       </div>
     </div>
   );
