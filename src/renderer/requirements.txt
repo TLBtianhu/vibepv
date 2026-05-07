@@ -7,3 +7,5 @@ transformers>=4.57.6
 modelscope>=1.36.3
 httpx>=0.28.0
 python-dotenv>=1.0.0
+httpx>=0.28.0
+python-dotenv>=1.0.0
