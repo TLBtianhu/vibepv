@@ -1,5 +1,5 @@
 ﻿"""
-DeepSeek V4 API 客户端，支持 Function Calling (带重试与优化)
+DeepSeek V4 API 客户端，支持 Function Calling (带重试与精细化超时)
 """
 import os
 import asyncio
@@ -25,6 +25,7 @@ def load_api_key():
                 return value if value else None
     return None
 
+
 # 尝试读取密钥
 api_key_value = load_api_key()
 if api_key_value:
@@ -32,15 +33,24 @@ if api_key_value:
 else:
     print("[WARNING] DEEPSEEK_API_KEY not found in .env file")
 
+
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 # ====== 全局配置：可在此调整 ======
 MODEL_NAME = "deepseek-v4-pro"   # 官方推荐的 V4-Pro 模型名
 MAX_TOKENS = 32768               # 限制输出长度，防止模型输出过长导致超时
-REQUEST_TIMEOUT = 90.0          # 单次请求超时时间（秒）
 MAX_RETRIES = 3                 # 最大重试次数
+
+# 精细化超时配置（使用 httpx.Timeout 对象）
+DEEPSEEK_TIMEOUT = httpx.Timeout(
+    connect=10.0,    # 建立连接超时 10 秒
+    read=300.0,      # 等待读取响应超时 300 秒（Function Calling 需要较长时间生成 JSON）
+    write=10.0,      # 发送请求超时 10 秒
+    pool=10.0,       # 从连接池获取连接超时 10 秒
+)
 # =================================
+
 
 async def call_llm(messages: list, tools: list | None = None) -> dict:
     """
@@ -70,7 +80,7 @@ async def call_llm(messages: list, tools: list | None = None) -> dict:
     last_exception = None
     for attempt in range(MAX_RETRIES):
         try:
-            async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
+            async with httpx.AsyncClient(timeout=DEEPSEEK_TIMEOUT) as client:
                 response = await client.post(DEEPSEEK_API_URL, json=payload, headers=headers)
                 print(f"[DEBUG] HTTP 状态码: {response.status_code} (尝试 {attempt + 1}/{MAX_RETRIES})")
                 response.raise_for_status()
@@ -82,9 +92,13 @@ async def call_llm(messages: list, tools: list | None = None) -> dict:
             if 400 <= status_code < 500:
                 raise
             last_exception = e
-        except httpx.ReadTimeout:
+        except httpx.TimeoutException:
             print(f"[WARNING] 请求超时 (尝试 {attempt + 1}/{MAX_RETRIES})")
-            last_exception = httpx.ReadTimeout("请求超时")
+            last_exception = httpx.TimeoutException("请求超时")
+        except Exception as e:
+            # 其他未知错误，也重试
+            print(f"[WARNING] 请求出错 (尝试 {attempt + 1}/{MAX_RETRIES}): {e}")
+            last_exception = e
 
         # 如果不是最后一次尝试，则指数退避后重试
         if attempt < MAX_RETRIES - 1:
