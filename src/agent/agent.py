@@ -30,7 +30,7 @@ async def run():
         s["text"] for s in analysis["lyrics"]["sentences"][:5]
     ) if analysis["lyrics"]["sentences"] else "无歌词"
 
-    # 2. 构建消息（调用 design_pv 工具）
+    # 2. 构建消息（调用 design_pv 工具，并添加严格约束）
     total_frames = int(duration_ms / 1000 * 30)
     system_msg = f"""你是 VibePV 的 AI 视觉动效导演。
 你会收到一首歌的音频分析数据：
@@ -41,7 +41,16 @@ async def run():
 - 总帧数(30fps): {total_frames}
 
 请调用 design_pv 工具，将完整的 VisualPlan 放在 visual_plan_json 字符串参数中。
-确保 JSON 格式正确，timeline 的 start/end 在 0 到 {total_frames} 范围内。"""
+确保 JSON 格式正确，timeline 的 start/end 在 0 到 {total_frames} 范围内。
+
+⚠️ 严格约束：只使用 tool_definitions.py 中列出的组件和参数名，不要自己发明任何字段名。
+- ParticleField 的颜色参数是 color（单数）和 colorSecondary（单数），不要使用 colors（复数数组）或 particleColor 等自创名称。
+- 速度参数必须用 speedRange（数组 [最小速度, 最大速度]），不要使用 speed（单数）。
+- 尺寸参数必须用 sizeRange（数组 [最小尺寸, 最大尺寸]），不要使用 size（单数）。
+- opacity 是单个小数（0~1），不要写成数组。
+- 粒子总数不超过 120（每层不超过 80）。
+- LyricsDisplay 不需要额外 params，不要给它加任何参数。
+- 全部参数名只能使用 tool_definitions.py 中明确列出的字段，切勿自己发明。"""
 
     messages = [
         {"role": "system", "content": system_msg},
