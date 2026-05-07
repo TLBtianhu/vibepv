@@ -37,7 +37,7 @@ DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 # ====== 全局配置：可在此调整 ======
 MODEL_NAME = "deepseek-v4-pro"   # 官方推荐的 V4-Pro 模型名
-MAX_TOKENS = 4096               # 限制输出长度，防止模型输出过长导致超时
+MAX_TOKENS = 32768               # 限制输出长度，防止模型输出过长导致超时
 REQUEST_TIMEOUT = 90.0          # 单次请求超时时间（秒）
 MAX_RETRIES = 3                 # 最大重试次数
 # =================================
