@@ -37,36 +37,6 @@ export const CircularSpectrum: React.FC<Props> = ({
   const centerX = 1920 / 2;
   const centerY = 1080 / 2;
 
-  // 生成弧段路径
-  const bars = spectrum.map((value, index) => {
-    const angle = (index / barCount) * Math.PI * 2 - Math.PI / 2; // 从12点钟方向开始
-    const innerR = radius;
-    const outerR = radius + Math.max(2, value * maxHeight);
-
-    const x1 = centerX + innerR * Math.cos(angle);
-    const y1 = centerY + innerR * Math.sin(angle);
-    const x2 = centerX + outerR * Math.cos(angle);
-    const y2 = centerY + outerR * Math.sin(angle);
-
-    return { x1, y1, x2, y2, value };
-  });
-
-  // 生成 SVG path：用相邻弧段连接成连续路径
-  const pathData = bars
-    .map((bar, i) => {
-      const nextBar = bars[(i + 1) % bars.length];
-      // 当前弧段：内圆到外圆
-      const d = [
-        `M ${bar.x1} ${bar.y1}`,
-        `L ${bar.x2} ${bar.y2}`,
-        `L ${nextBar.x2} ${nextBar.y2}`,
-        `L ${nextBar.x1} ${nextBar.y1}`,
-        "Z",
-      ].join(" ");
-      return d;
-    })
-    .join(" ");
-
   return (
     <svg
       width="1920"
@@ -80,12 +50,13 @@ export const CircularSpectrum: React.FC<Props> = ({
       }}
     >
       <g opacity={opacity}>
-        {bars.map((bar, i) => {
+        {spectrum.map((value, i) => {
           const angle = (i / barCount) * Math.PI * 2 - Math.PI / 2;
           const x1 = centerX + radius * Math.cos(angle);
           const y1 = centerY + radius * Math.sin(angle);
-          const x2 = centerX + (radius + Math.max(2, bar.value * maxHeight)) * Math.cos(angle);
-          const y2 = centerY + (radius + Math.max(2, bar.value * maxHeight)) * Math.sin(angle);
+          const height = Math.max(2, value * maxHeight);
+          const x2 = centerX + (radius + height) * Math.cos(angle);
+          const y2 = centerY + (radius + height) * Math.sin(angle);
 
           return (
             <line
@@ -97,7 +68,7 @@ export const CircularSpectrum: React.FC<Props> = ({
               stroke={color}
               strokeWidth={2}
               strokeLinecap="round"
-              opacity={0.5 + bar.value * 0.5}
+              opacity={0.5 + value * 0.5}
             />
           );
         })}
