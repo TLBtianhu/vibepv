@@ -71,3 +71,9 @@ export type VisualPlan = {
   };
   rules: EffectRule[];
 };
+
+// ====== 组件元数据类型 ======
+export type ComponentMeta = {
+  allowedParams: string[];
+  defaults: Record<string, unknown>;
+};

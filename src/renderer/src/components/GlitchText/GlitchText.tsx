@@ -1,5 +1,5 @@
 import { useCurrentFrame, interpolate } from "remotion";
-import type { ComponentMeta } from "../componentRegistry";
+import type { ComponentMeta } from "../../types";
 
 type Props = {
   intensity?: number;    // 故障强度 0~1，默认 0.5

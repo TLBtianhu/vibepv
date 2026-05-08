@@ -12,26 +12,28 @@ from tool_definitions import TOOLS
 
 
 def load_component_meta(meta_dir=None):
-    """扫描 component_meta/ 目录，返回所有零件元数据列表"""
     if meta_dir is None:
-        # agent.py 在 src/agent/ 下，往上两层到项目根目录
-        meta_dir = Path(__file__).resolve().parent.parent.parent / "component_meta"
-
+        # 指向 src/renderer/src/components
+        meta_dir = Path(__file__).resolve().parent.parent / "renderer" / "src" / "components"
+    
     metas = []
     if not os.path.isdir(meta_dir):
-        print(f"[Agent] 警告: 未找到组件元数据目录 {meta_dir}")
+        print(f"[Agent] 警告: 未找到组件目录 {meta_dir}")
         return metas
-
-    for fname in sorted(os.listdir(meta_dir)):
-        if fname.endswith(".meta.json"):
-            filepath = os.path.join(meta_dir, fname)
+    
+    for folder in sorted(os.listdir(meta_dir)):
+        folder_path = os.path.join(meta_dir, folder)
+        if not os.path.isdir(folder_path):
+            continue
+        manifest_path = os.path.join(folder_path, "manifest.json")
+        if os.path.isfile(manifest_path):
             try:
-                with open(filepath, "r", encoding="utf-8") as f:
+                with open(manifest_path, "r", encoding="utf-8") as f:
                     meta = json.load(f)
                     metas.append(meta)
             except json.JSONDecodeError:
-                print(f"[Agent] 警告: 无法解析元数据文件 {filepath}")
-
+                print(f"[Agent] 警告: 无法解析元数据文件 {manifest_path}")
+    
     return metas
 
 

@@ -1,5 +1,5 @@
 import React from "react";
-import type { ComponentMeta } from "../componentRegistry";
+import type { ComponentMeta } from "../../types";
 
 type Props = {
   colors?: string[];

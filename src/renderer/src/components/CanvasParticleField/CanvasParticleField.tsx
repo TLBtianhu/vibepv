@@ -1,5 +1,5 @@
 import { useCurrentFrame } from "remotion";
-import type { ComponentMeta } from "../componentRegistry";
+import type { ComponentMeta } from "../../types";
 
 type Props = {
   particleCount?: number;

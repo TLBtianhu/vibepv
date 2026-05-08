@@ -1,5 +1,5 @@
 import React from "react";
-import type { ComponentMeta } from "../componentRegistry";
+import type { ComponentMeta } from "../../types";
 
 type Props = {
   opacity?: number;   // 扫描线透明度，0~1，默认 0.08
