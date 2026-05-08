@@ -1,4 +1,5 @@
 import React from "react";
+import type { ComponentMeta } from "../componentRegistry";
 
 type Props = {
   colors?: string[];
@@ -19,4 +20,9 @@ export const AnimatedGradient: React.FC<Props> = ({
       }}
     />
   );
+};
+
+export const animatedGradientMeta: ComponentMeta = {
+  allowedParams: ["colors"],
+  defaults: { colors: ["#000", "#fff"] },
 };

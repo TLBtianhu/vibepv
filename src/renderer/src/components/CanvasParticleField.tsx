@@ -1,4 +1,5 @@
 import { useCurrentFrame } from "remotion";
+import type { ComponentMeta } from "../componentRegistry";
 
 type Props = {
   particleCount?: number;
@@ -31,17 +32,19 @@ export const CanvasParticleField: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const safeCount = Math.min(particleCount, 120);
 
-  const particles: Particle[] = Array.from({ length: safeCount }, (_, i) => {
-    const seed = i * 137.5 + 1;
-    const pseudoRandom = (min: number, max: number) =>
-      min + ((seed * 2654435761) % 1000) / 1000 * (max - min);
+    const pseudoRandom = (seed: number) => (min: number, max: number) =>
+    min + ((seed * 2654435761) % 1000) / 1000 * (max - min);
+
+  const particles: Particle[] = Array.from({ length: safeCount }, (_, idx) => {
+    const seed = idx * 137.5 + 1;
+    const rand = pseudoRandom(seed);
 
     return {
-      x: pseudoRandom(0, 1920),
-      y: pseudoRandom(0, 1080),
-      vx: pseudoRandom(-1, 1) * speedRange[1],
-      vy: -pseudoRandom(speedRange[0], speedRange[1]),
-      size: pseudoRandom(sizeRange[0], sizeRange[1]),
+      x: rand(0, 1920),
+      y: rand(0, 1080),
+      vx: rand(-1, 1) * speedRange[1],
+      vy: -rand(speedRange[0], speedRange[1]),
+      size: rand(sizeRange[0], sizeRange[1]),
       color: colorSecondary
         ? (Math.random() > 0.5 ? color : colorSecondary)
         : color,
@@ -80,4 +83,15 @@ export const CanvasParticleField: React.FC<Props> = ({
       }}
     />
   );
+};
+
+export const canvasParticleFieldMeta: ComponentMeta = {
+  allowedParams: ["particleCount", "color", "colorSecondary", "sizeRange", "speedRange", "opacity"],
+  defaults: {
+    particleCount: 60,
+    color: "#ff00ff",
+    sizeRange: [1, 6],
+    speedRange: [0.3, 1.5],
+    opacity: 0.6,
+  },
 };

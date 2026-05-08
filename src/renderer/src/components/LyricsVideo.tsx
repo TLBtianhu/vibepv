@@ -1,6 +1,7 @@
 ﻿import { useCurrentFrame, useVideoConfig, Audio, staticFile } from "remotion";
 import { useAudioData, visualizeAudio } from "@remotion/media-utils";
-import type { VibePVProps } from "./types";
+import type { VibePVProps } from "../types";
+import type { ComponentMeta } from "../componentRegistry";
 
 export const LyricsVideo: React.FC<VibePVProps> = ({
   lyrics,
@@ -115,4 +116,9 @@ export const LyricsVideo: React.FC<VibePVProps> = ({
       </div>
     </div>
   );
+};
+
+export const lyricsVideoMeta: ComponentMeta = {
+  allowedParams: [],
+  defaults: {},
 };

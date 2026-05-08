@@ -1,4 +1,5 @@
 import { useCurrentFrame, interpolate } from "remotion";
+import type { ComponentMeta } from "../componentRegistry";
 
 type Props = {
   intensity?: number;    // 故障强度 0~1，默认 0.5
@@ -96,4 +97,9 @@ export const GlitchText: React.FC<Props> = ({
       />
     </div>
   );
+};
+
+export const glitchTextMeta: ComponentMeta = {
+  allowedParams: ["intensity", "color"],
+  defaults: { intensity: 0.5, color: "#ff00ff" },
 };
