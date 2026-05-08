@@ -1,4 +1,4 @@
-﻿export { GlitchText } from './GlitchText';
-export { glitchTextMeta } from './GlitchText';
-export { GlitchText as Component } from './GlitchText';
-export { glitchTextMeta as Meta } from './GlitchText';
+﻿export { GlitchText } from './Component';
+export { glitchTextMeta } from './Component';
+export { GlitchText as Component } from './Component';
+export { glitchTextMeta as Meta } from './Component';

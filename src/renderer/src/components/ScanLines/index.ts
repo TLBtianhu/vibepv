@@ -1,4 +1,4 @@
-﻿export { ScanLines } from './ScanLines';
-export { scanLinesMeta } from './ScanLines';
-export { ScanLines as Component } from './ScanLines';
-export { scanLinesMeta as Meta } from './ScanLines';
+﻿export { ScanLines } from './Component';
+export { scanLinesMeta } from './Component';
+export { ScanLines as Component } from './Component';
+export { scanLinesMeta as Meta } from './Component';

@@ -1,4 +1,4 @@
-﻿export { AnimatedGradient } from './AnimatedGradient';
-export { animatedGradientMeta } from './AnimatedGradient';
-export { AnimatedGradient as Component } from './AnimatedGradient';
-export { animatedGradientMeta as Meta } from './AnimatedGradient';
+﻿export { AnimatedGradient } from './Component';
+export { animatedGradientMeta } from './Component';
+export { AnimatedGradient as Component } from './Component';
+export { animatedGradientMeta as Meta } from './Component';
