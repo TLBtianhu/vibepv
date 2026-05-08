@@ -84,6 +84,7 @@ async def run():
     with open(analysis_path, "r", encoding="utf-8") as f:
         analysis = json.load(f)
 
+    audio_file = analysis["audio_file"]
     bpm = analysis["bpm"]["detected_bpm"]
     duration_ms = analysis["audio_duration_ms"]
     sentences_count = len(analysis["lyrics"]["sentences"])
@@ -102,6 +103,7 @@ async def run():
 
     system_msg = f"""你是 VibePV 的 AI 视觉动效导演。
 你会收到一首歌的音频分析数据：
+- 音频文件名: {audio_file}
 - BPM: {bpm}
 - 时长: {duration_ms}ms ({duration_ms/1000:.1f}秒)
 - 歌词句子数: {sentences_count}
