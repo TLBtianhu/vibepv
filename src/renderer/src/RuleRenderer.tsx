@@ -45,15 +45,16 @@ export const RuleRenderer: React.FC<Props> = ({ visual_plan, ...commonProps }) =
           }
         }
 
-        const Component = entry.component;  // ← 从这里取真正的组件
+        const Component = entry.component;
+        const extendedProps = {
+          ...commonProps,
+          ...safeParams,
+          words: commonProps.lyrics?.words ?? [],
+          effectId: rule.effectId,
+          layer: rule.layer,
+        };
         return (
-          <Component
-            key={rule.effectId}
-            {...commonProps}
-            {...safeParams}
-            effectId={rule.effectId}
-            layer={rule.layer}
-          />
+          <Component key={rule.effectId} {...extendedProps} />
         );
       })}
     </div>
