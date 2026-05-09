@@ -11,6 +11,7 @@ VibePV Agent 主控脚本
     从 component_selection.json 读取用户确认的零件列表，生成 visual_params.json。
 """
 import sys
+import os
 import json
 import asyncio
 from component_selector import select_components, save_selection, load_selection
@@ -56,6 +57,13 @@ async def run():
         output_path = sys.argv[2]
         file_index = sys.argv.index("--components-file")
         components_file = sys.argv[file_index + 1]
+
+        # 新增：检查文件是否存在
+        if not os.path.exists(components_file):
+            print(f"错误: 零件选择文件不存在: {components_file}")
+            print("请先运行阶段一生成该文件：")
+            print(f"  python src/agent/agent.py {analysis_path} --prompt '风格描述'")
+            sys.exit(1)
 
         with open(analysis_path, "r", encoding="utf-8") as f:
             analysis = json.load(f)
