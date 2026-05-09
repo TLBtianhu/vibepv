@@ -1,0 +1,12 @@
+{
+  "name": "merge_sentences",
+  "description": "歌词断句合并",
+  "produces": {
+    "sentences": {
+      "file": "output/sentences.json",
+      "field": "lyrics.sentences",
+      "required_by": ["LyricsVideo", "GlitchText"],
+      "depends_on": ["words", "bpm"]
+    }
+  }
+}

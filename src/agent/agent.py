@@ -2,17 +2,17 @@
 VibePV Agent 主控脚本
 
 用法:
-  自动模式【仅生成零件选择文件】:
-    python src/agent/agent.py <analysis.json路径> --prompt "风格描述"
+  阶段一 (生成零件选择文件):
+    python src/agent/agent.py <analysis.json路径> --prompt '风格描述'
     生成 output/component_selection.json 后停止，请审核/修改该文件。
 
-  UI 模式【生成视觉计划】:
+  阶段二 (生成视觉计划):
     python src/agent/agent.py <analysis.json路径> <输出JSON路径> --components-file output/component_selection.json
     从 component_selection.json 读取用户确认的零件列表，生成 visual_params.json。
 """
 import sys
-import os
 import json
+import os
 import asyncio
 from component_selector import select_components, save_selection, load_selection
 from visual_planner import generate_visual_plan
@@ -58,7 +58,6 @@ async def run():
         file_index = sys.argv.index("--components-file")
         components_file = sys.argv[file_index + 1]
 
-        # 新增：检查文件是否存在
         if not os.path.exists(components_file):
             print(f"错误: 零件选择文件不存在: {components_file}")
             print("请先运行阶段一生成该文件：")
@@ -84,7 +83,6 @@ async def run():
         print(f"[Agent] 视觉计划已保存至 {output_path}")
         return
 
-    # ========== 参数错误 ==========
     print("错误: 请提供 --prompt 或 --components-file 参数")
     print("用法:")
     print("  阶段一: python src/agent/agent.py <analysis.json路径> --prompt '风格描述'")

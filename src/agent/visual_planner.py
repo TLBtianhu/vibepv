@@ -8,7 +8,6 @@ from tool_definitions import TOOL_CATALOG, load_manifests
 
 
 def build_stage2_details(component_names):
-    """根据零件名称列表，构建详细参数描述文本"""
     manifests = load_manifests()
     component_details = []
 
@@ -36,15 +35,19 @@ def build_stage2_details(component_names):
 
 
 def build_system_msg(analysis, component_names):
-    """构建第二阶段系统消息"""
-    bpm = analysis["bpm"]["detected_bpm"]
+    bpm = analysis["bpm"]["detected_bpm"] if analysis.get("bpm") else "未知"
     duration_ms = analysis["audio_duration_ms"]
     total_frames = int(duration_ms / 1000 * 30)
     audio_file = analysis["audio_file"]
 
-    lyrics_preview = " ".join(
-        s["text"] for s in analysis["lyrics"]["sentences"][:5]
-    ) if analysis["lyrics"]["sentences"] else "无歌词"
+    has_lyrics = analysis.get("lyrics") is not None and analysis["lyrics"].get("sentences")
+    if has_lyrics:
+        lyrics_preview = " ".join(
+            s["text"] for s in analysis["lyrics"]["sentences"][:5]
+        )
+        lyrics_info = f"- 歌词句子数: {len(analysis['lyrics']['sentences'])}\n- 歌词预览: {lyrics_preview}"
+    else:
+        lyrics_info = "- 歌词: 无（纯音乐/音MAD）"
 
     details_text = build_stage2_details(component_names)
 
@@ -54,7 +57,7 @@ def build_system_msg(analysis, component_names):
 - 音频文件名: {audio_file}
 - BPM: {bpm}
 - 总帧数(30fps): {total_frames}
-- 歌词预览: {lyrics_preview}
+{lyrics_info}
 
 所选零件及参数：
 {details_text}
@@ -77,22 +80,10 @@ def build_system_msg(analysis, component_names):
 }}}}
 每个被选中的零件都必须作为 rules 数组中的一个独立元素出现，**严禁使用其他结构**。
 
-⚠️ 重要：所有需要音频文件的零件（如 CircularSpectrum）必须使用上述音频文件名 "{audio_file}"，严禁自己编造文件名（如 bgm.mp3、audio.mp3 等）。"""
+⚠️ 重要：所有需要音频文件的零件（如 CircularSpectrum）必须使用上述音频文件名 "{audio_file}"，严禁自己编造文件名。"""
 
 
 async def generate_visual_plan(analysis, user_prompt, component_names, model=None):
-    """
-    调用 LLM 生成完整视觉计划
-    
-    参数:
-        analysis: 音频分析数据字典
-        user_prompt: 用户原始 Prompt（UI 模式可为空）
-        component_names: 用户确认的零件列表
-        model: 指定模型（默认 deepseek-v4-pro）
-    
-    返回:
-        dict: visual_plan 对象
-    """
     system_msg = build_system_msg(analysis, component_names)
 
     messages = [
@@ -107,7 +98,6 @@ async def generate_visual_plan(analysis, user_prompt, component_names, model=Non
     choice = response["choices"][0]
     msg = choice["message"]
 
-    # 提取结果
     if choice["finish_reason"] == "tool_calls":
         for tool_call in msg["tool_calls"]:
             if tool_call["function"]["name"] == "design_pv":

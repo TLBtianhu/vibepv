@@ -17,15 +17,16 @@ export const LyricsVideo: React.FC<VibePVProps> = ({
     ? visualizeAudio({ fps, frame, audioData, numberOfSamples: 32 })
     : null;
 
-  const currentSentence = lyrics.sentences.find(
+  const sentences = lyrics?.sentences ?? [];
+  const currentSentence = sentences.find(
     (s) => currentTimeMs >= s.start_ms && currentTimeMs <= s.end_ms
   );
 
-  const nextSentenceIndex = lyrics.sentences.findIndex(
+  const nextSentenceIndex = sentences.findIndex(
     (s) => currentTimeMs < s.start_ms
   );
   const nextSentence =
-    nextSentenceIndex !== -1 ? lyrics.sentences[nextSentenceIndex] : null;
+    nextSentenceIndex !== -1 ? sentences[nextSentenceIndex] : null;
 
   return (
     <div
@@ -111,7 +112,7 @@ export const LyricsVideo: React.FC<VibePVProps> = ({
           opacity: 0.3,
         }}
       >
-        BPM {bpm.detected_bpm} | {visual_params.particle_speed}
+        BPM {bpm?.detected_bpm ?? "无"} | {visual_params.particle_speed}
       </div>
     </div>
   );
@@ -120,4 +121,5 @@ export const LyricsVideo: React.FC<VibePVProps> = ({
 export const lyricsVideoMeta: ComponentMeta = {
   allowedParams: [],
   defaults: {},
+  renderMode: "overlay",
 };

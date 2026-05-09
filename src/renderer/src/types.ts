@@ -11,12 +11,12 @@ export interface SentenceTimestamp {
 }
 
 export interface BPMData {
-  detected_bpm: number;
+  detected_bpm: number | null;
   model: string;
   manual_override: boolean;
+  error?: string;
 }
 
-// ====== 新增：AI 生成的视觉参数格式 ======
 export interface VisualParams {
   particle_speed: number;
   color_scheme: string[];
@@ -28,22 +28,18 @@ export interface VisualParams {
   reasoning?: string;
 }
 
-// ====== 最终传入组件的完整 Props ======
 export type VibePVProps = {
   lyrics: {
     words: WordTimestamp[];
     sentences: SentenceTimestamp[];
-  };
-  bpm: BPMData;
-  merge_multiplier: number;
+  } | null;
+  bpm: BPMData | null;
+  merge_multiplier: number | null;
   audio_duration_ms: number;
   audio_file: string;
   visual_params: VisualParams;
 };
 
-// ====== VisualPlan 类型定义 ======
-
-// 效果规则：一条规则描述一个视觉元素
 export type EffectRule = {
   effectId: string;
   type: "component" | "custom";
@@ -63,7 +59,6 @@ export type EffectRule = {
   };
 };
 
-// 视觉计划：Agent 输出的顶层结构
 export type VisualPlan = {
   metadata: {
     style: string;
@@ -72,8 +67,8 @@ export type VisualPlan = {
   rules: EffectRule[];
 };
 
-// ====== 组件元数据类型 ======
 export type ComponentMeta = {
   allowedParams: string[];
   defaults: Record<string, unknown>;
+  renderMode?: "overlay" | "wrapper";
 };
