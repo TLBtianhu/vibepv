@@ -55,7 +55,7 @@ async def select_components(analysis, user_prompt):
     ]
 
     print("[Agent] 第一阶段：AI 选择零件...")
-    response = await call_llm(messages, TOOL_CATALOG)
+    response = await call_llm(messages, TOOL_CATALOG, model="deepseek-v4-pro")
     choice = response["choices"][0]
     msg = choice["message"]
 
@@ -74,3 +74,33 @@ async def select_components(analysis, user_prompt):
 
     print(f"[Agent] AI 选择了 {len(component_names)} 个零件: {component_names}")
     return component_names
+
+def save_selection(component_names, analysis, user_prompt, output_path="output/component_selection.json"):
+    """保存零件选择结果到中间文件，供 UI 界面读取和修改"""
+    import os
+    
+    # 获取全部可用零件列表
+    catalog = get_components_catalog()
+    available = [c["name"] for c in catalog]
+    
+    selection = {
+        "available_components": available,
+        "selected_components": component_names,
+        "style": user_prompt,
+        "bpm": analysis["bpm"]["detected_bpm"],
+        "total_frames": int(analysis["audio_duration_ms"] / 1000 * 30),
+        "user_modified": False
+    }
+    
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(selection, f, ensure_ascii=False, indent=2)
+    
+    print(f"[Selector] 零件选择结果已保存至 {output_path}")
+
+
+def load_selection(filepath="output/component_selection.json"):
+    """从中间文件加载用户确认的零件列表"""
+    with open(filepath, "r", encoding="utf-8") as f:
+        selection = json.load(f)
+    return selection["selected_components"]
