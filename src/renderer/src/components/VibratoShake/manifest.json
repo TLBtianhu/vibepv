@@ -1,0 +1,21 @@
+{
+  "name": "VibratoShake",
+  "description": "画面震动特效，用于核嗓、音MAD等激烈风格",
+  "params": {
+    "intensity": {
+      "type": "number",
+      "default": 10,
+      "description": "震动强度（像素偏移量）"
+    },
+    "frequency": {
+      "type": "number",
+      "default": 8,
+      "description": "震动频率（Hz）"
+    },
+    "direction": {
+      "type": "string",
+      "default": "both",
+      "description": "震动方向：both（全方向）、horizontal（水平）、vertical（垂直）"
+    }
+  }
+}

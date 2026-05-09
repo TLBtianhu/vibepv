@@ -40,6 +40,7 @@ def build_system_msg(analysis, component_names):
     bpm = analysis["bpm"]["detected_bpm"]
     duration_ms = analysis["audio_duration_ms"]
     total_frames = int(duration_ms / 1000 * 30)
+    audio_file = analysis["audio_file"]
 
     lyrics_preview = " ".join(
         s["text"] for s in analysis["lyrics"]["sentences"][:5]
@@ -50,6 +51,7 @@ def build_system_msg(analysis, component_names):
     return f"""现在你已获得所选零件的完整参数定义。
 
 音频数据：
+- 音频文件名: {audio_file}
 - BPM: {bpm}
 - 总帧数(30fps): {total_frames}
 - 歌词预览: {lyrics_preview}
@@ -73,7 +75,9 @@ def build_system_msg(analysis, component_names):
     }}}}
   ]
 }}}}
-每个被选中的零件都必须作为 rules 数组中的一个独立元素出现，**严禁使用其他结构**。"""
+每个被选中的零件都必须作为 rules 数组中的一个独立元素出现，**严禁使用其他结构**。
+
+⚠️ 重要：所有需要音频文件的零件（如 CircularSpectrum）必须使用上述音频文件名 "{audio_file}"，严禁自己编造文件名（如 bgm.mp3、audio.mp3 等）。"""
 
 
 async def generate_visual_plan(analysis, user_prompt, component_names, model=None):
