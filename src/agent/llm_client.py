@@ -52,9 +52,12 @@ DEEPSEEK_TIMEOUT = httpx.Timeout(
 # =================================
 
 
-async def call_llm(messages: list, tools: list | None = None) -> dict:
+async def call_llm(messages: list, tools: list | None = None, model: str | None = None) -> dict:
     """
     调用 DeepSeek V4 API，支持自动重试与指数退避。
+    - messages: 对话消息列表
+    - tools: 工具定义列表（可选）
+    - model: 指定使用的模型，如未提供则使用全局默认 MODEL_NAME
     """
     if not DEEPSEEK_API_KEY:
         raise RuntimeError(
@@ -62,12 +65,15 @@ async def call_llm(messages: list, tools: list | None = None) -> dict:
             "并且包含形如 DEEPSEEK_API_KEY=sk-xxx 的行（等号前后不要有空格）。"
         )
 
+    # 决定最终使用的模型
+    active_model = model or MODEL_NAME
+
     headers = {
         "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
         "Content-Type": "application/json",
     }
     payload = {
-        "model": MODEL_NAME,
+        "model": active_model,
         "messages": messages,
         "tools": tools,
         "stream": False,                # 必须关闭流式
@@ -96,7 +102,7 @@ async def call_llm(messages: list, tools: list | None = None) -> dict:
             print(f"[WARNING] 请求超时 (尝试 {attempt + 1}/{MAX_RETRIES})")
             last_exception = httpx.TimeoutException("请求超时")
         except Exception as e:
-            # 其他未知错误，也重试
+            # 其他未知错误，也进行重试
             print(f"[WARNING] 请求出错 (尝试 {attempt + 1}/{MAX_RETRIES}): {e}")
             last_exception = e
 

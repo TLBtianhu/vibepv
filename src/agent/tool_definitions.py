@@ -48,18 +48,18 @@ TOOL_CATALOG = [
 
 # ==================== 零件目录加载 ====================
 
-def load_manifests(components_dir=None):
-    """从 components 目录加载所有零件的 manifest.json"""
-    if components_dir is None:
-        # 默认路径：src/renderer/src/components
-        components_dir = Path(__file__).resolve().parent.parent / "renderer" / "src" / "components"
+def load_manifests(meta_dir=None):
+    if meta_dir is None:
+        # 路径已更新：components 已上提到 src/renderer/components
+        meta_dir = Path(__file__).resolve().parent.parent / "renderer" / "components"
     
     manifests = {}
-    if not os.path.isdir(components_dir):
+    if not os.path.isdir(meta_dir):
+        print(f"[ToolDef] 警告: 未找到组件目录 {meta_dir}")
         return manifests
     
-    for folder in sorted(os.listdir(components_dir)):
-        folder_path = os.path.join(components_dir, folder)
+    for folder in sorted(os.listdir(meta_dir)):
+        folder_path = os.path.join(meta_dir, folder)
         if not os.path.isdir(folder_path):
             continue
         manifest_path = os.path.join(folder_path, "manifest.json")
@@ -69,7 +69,7 @@ def load_manifests(components_dir=None):
                     meta = json.load(f)
                     name = meta.get("name", folder)
                     manifests[name] = meta
-            except (json.JSONDecodeError, KeyError):
+            except json.JSONDecodeError:
                 print(f"[ToolDef] 警告: 无法解析 manifest 文件 {manifest_path}")
     
     return manifests

@@ -1,6 +1,5 @@
 """
-VibePV 视觉计划生成器 (渐进式披露第二阶段)
-根据用户确认的零件列表，生成完整的 VisualPlan JSON
+VibePV 视觉计划生成器 (第二阶段)
 """
 import json
 from llm_client import call_llm
@@ -9,8 +8,7 @@ from tool_definitions import TOOL_CATALOG, load_manifests
 
 def build_stage2_details(component_names):
     manifests = load_manifests()
-    component_details = []
-
+    details = []
     for name in component_names:
         if name not in manifests:
             continue
@@ -29,25 +27,20 @@ def build_stage2_details(component_names):
             param_lines.append(line)
         param_lines.append("   }")
         params_str = "\n".join(param_lines)
-        component_details.append(f"- {name}: {meta.get('description', '')}\n{params_str}")
+        details.append(f"- {name}: {meta.get('description', '')}\n{params_str}")
+    return "\n\n".join(details)
 
-    return "\n\n".join(component_details)
 
-
-def build_system_msg(analysis, component_names):
-    bpm = analysis["bpm"]["detected_bpm"] if analysis.get("bpm") else "未知"
-    duration_ms = analysis["audio_duration_ms"]
+def build_system_msg(adata, component_names):
+    audio_file = adata["audio_file"]
+    duration_ms = adata["audio_duration_ms"]
     total_frames = int(duration_ms / 1000 * 30)
-    audio_file = analysis["audio_file"]
+    available_fields = adata.get("available_fields", [])
 
-    has_lyrics = analysis.get("lyrics") is not None and analysis["lyrics"].get("sentences")
-    if has_lyrics:
-        lyrics_preview = " ".join(
-            s["text"] for s in analysis["lyrics"]["sentences"][:5]
-        )
-        lyrics_info = f"- 歌词句子数: {len(analysis['lyrics']['sentences'])}\n- 歌词预览: {lyrics_preview}"
+    if "lyrics.words" in available_fields:
+        lyrics_info = "- 歌词: 可用"
     else:
-        lyrics_info = "- 歌词: 无（纯音乐/音MAD）"
+        lyrics_info = "- 歌词: 无"
 
     details_text = build_stage2_details(component_names)
 
@@ -55,9 +48,10 @@ def build_system_msg(analysis, component_names):
 
 音频数据：
 - 音频文件名: {audio_file}
-- BPM: {bpm}
+- BPM: {'有' if 'bpm' in available_fields else '未知'}
 - 总帧数(30fps): {total_frames}
 {lyrics_info}
+- 可用数据字段: {", ".join(available_fields) if available_fields else "无"}
 
 所选零件及参数：
 {details_text}
@@ -79,18 +73,15 @@ def build_system_msg(analysis, component_names):
   ]
 }}}}
 每个被选中的零件都必须作为 rules 数组中的一个独立元素出现，**严禁使用其他结构**。
+所有需要音频文件的零件（如 CircularSpectrum）必须使用上述音频文件名 "{audio_file}"。"""
 
-⚠️ 重要：所有需要音频文件的零件（如 CircularSpectrum）必须使用上述音频文件名 "{audio_file}"，严禁自己编造文件名。"""
 
-
-async def generate_visual_plan(analysis, user_prompt, component_names, model=None):
-    system_msg = build_system_msg(analysis, component_names)
-
+async def generate_visual_plan(adata, user_prompt, component_names, model=None):
+    system_msg = build_system_msg(adata, component_names)
     messages = [
         {"role": "system", "content": system_msg},
         {"role": "user", "content": user_prompt or "请根据音频数据和零件描述生成视觉计划"},
     ]
-
     design_pv_tool = [t for t in TOOL_CATALOG if t["function"]["name"] == "design_pv"]
     active_model = model or "deepseek-v4-pro"
     print(f"[Planner] 生成视觉计划... (模型: {active_model})")
@@ -104,8 +95,7 @@ async def generate_visual_plan(analysis, user_prompt, component_names, model=Non
                 args = json.loads(tool_call["function"]["arguments"])
                 visual_plan_json = args.get("visual_plan_json", "{}")
                 try:
-                    visual_plan = json.loads(visual_plan_json)
-                    return visual_plan
+                    return json.loads(visual_plan_json)
                 except json.JSONDecodeError:
                     return None
         raise RuntimeError("AI 没有调用 design_pv 工具")
