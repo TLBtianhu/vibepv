@@ -11,11 +11,10 @@ import os
 def scan_data_sources(audio_path=None, modules_dir=None):
     """
     扫描数据源目录，返回可用数据信息字典。
-    audio_path 参数保留但不再用于提取元数据，仅用于向后兼容。
     """
     if modules_dir is None:
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        modules_dir = os.path.join(current_dir, "..", "analyzers", "modules")
+        modules_dir = os.path.join(current_dir, "..", "..", "analyzers", "modules")
 
     available_fields = []
     data_sources = {}

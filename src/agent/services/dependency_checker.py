@@ -1,11 +1,13 @@
 """数据源依赖检查"""
 
-def check_missing_data(selected_components, adata):
-    from tool_definitions import load_manifests as load_visual_manifests
-    manifests = load_visual_manifests()
-    available_fields = adata.get("available_fields", [])
-    if "audio_file" not in available_fields:
-        available_fields.append("audio_file")
+def check_missing_data(selected_components, available_fields):
+    """
+    检查所选零件依赖的数据字段是否缺失。
+    available_fields: 当前可用的数据字段列表
+    返回：{ 零件名: [缺失字段列表] } 的字典
+    """
+    from services.manifest_loader import load_manifests
+    manifests = load_manifests()
 
     missing_map = {}
     for comp_name in selected_components:

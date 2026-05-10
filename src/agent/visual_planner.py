@@ -1,12 +1,14 @@
 """
-VibePV 视觉计划生成器 (第二阶段)
+VibePV 视觉计划生成器 (渐进式披露第二阶段)
 """
 import json
 from llm_client import call_llm
-from tool_definitions import TOOL_CATALOG, load_manifests
+from tool_definitions import TOOL_CATALOG
+from services.manifest_loader import load_manifests
 
 
 def build_stage2_details(component_names):
+    """根据零件名称列表，构建详细参数描述文本"""
     manifests = load_manifests()
     details = []
     for name in component_names:
@@ -32,15 +34,12 @@ def build_stage2_details(component_names):
 
 
 def build_system_msg(adata, component_names):
-    audio_file = adata["audio_file"]
-    duration_ms = adata["audio_duration_ms"]
-    total_frames = int(duration_ms / 1000 * 30)
+    """构建第二阶段系统消息，动态描述可用数据"""
+    audio_file = adata.get("audio_file", "")
+    duration_ms = adata.get("audio_duration_ms", 0)
+    total_frames = int(duration_ms / 1000 * 30) if duration_ms else 0
     available_fields = adata.get("available_fields", [])
-
-    if "lyrics.words" in available_fields:
-        lyrics_info = "- 歌词: 可用"
-    else:
-        lyrics_info = "- 歌词: 无"
+    available_str = ", ".join(available_fields) if available_fields else "无"
 
     details_text = build_stage2_details(component_names)
 
@@ -48,10 +47,8 @@ def build_system_msg(adata, component_names):
 
 音频数据：
 - 音频文件名: {audio_file}
-- BPM: {'有' if 'bpm' in available_fields else '未知'}
 - 总帧数(30fps): {total_frames}
-{lyrics_info}
-- 可用数据字段: {", ".join(available_fields) if available_fields else "无"}
+- 可用数据字段: {available_str}
 
 所选零件及参数：
 {details_text}
@@ -77,11 +74,13 @@ def build_system_msg(adata, component_names):
 
 
 async def generate_visual_plan(adata, user_prompt, component_names, model=None):
+    """调用 LLM 生成完整视觉计划"""
     system_msg = build_system_msg(adata, component_names)
     messages = [
         {"role": "system", "content": system_msg},
         {"role": "user", "content": user_prompt or "请根据音频数据和零件描述生成视觉计划"},
     ]
+
     design_pv_tool = [t for t in TOOL_CATALOG if t["function"]["name"] == "design_pv"]
     active_model = model or "deepseek-v4-pro"
     print(f"[Planner] 生成视觉计划... (模型: {active_model})")
