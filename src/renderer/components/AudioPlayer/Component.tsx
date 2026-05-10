@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Audio, staticFile } from "remotion";
+import { Html5Audio, staticFile } from "remotion";
 import type { ComponentMeta } from "../../src/app/types";
 
 type Props = {
@@ -9,7 +8,7 @@ type Props = {
 export const AudioPlayer: React.FC<Props> = ({ audio_file }) => {
   if (!audio_file) return null;
 
-  return <Audio src={staticFile(audio_file)} />;
+  return <Html5Audio src={staticFile(audio_file)} />;
 };
 
 export const audioPlayerMeta: ComponentMeta = {

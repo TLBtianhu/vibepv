@@ -27,13 +27,18 @@ TOOL_CATALOG = [
         "type": "function",
         "function": {
             "name": "design_pv",
-            "description": "当所有必需的视觉零件完整定义都已获得后，使用此工具生成最终的PV视觉计划。",
+            "description": "当所有必需的视觉零件完整定义都已获得后，使用此工具生成或更新PV视觉计划。如果 target_effects 不为空，只更新指定效果的参数，其余规则保持原样。",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "visual_plan_json": {
                         "type": "string",
-                        "description": "JSON 字符串，包含 metadata 和 rules"
+                        "description": "JSON 字符串，包含 metadata 和 rules。"
+                    },
+                    "target_effects": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "（可选）如果提供，表示只为列表中的这些 effectId 生成或更新参数。如果为空或不提供，则按默认行为为所有选中的零件生成参数。"
                     }
                 },
                 "required": ["visual_plan_json"]

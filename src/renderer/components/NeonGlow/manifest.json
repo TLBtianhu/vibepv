@@ -1,6 +1,7 @@
 {
   "name": "NeonGlow",
   "description": "霓虹发光效果叠加层，可叠加到歌词或标题上，支持脉冲动画",
+  "requires": { "data": [] },
   "params": {
     "glowColor": {
       "type": "string",

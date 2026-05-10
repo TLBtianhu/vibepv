@@ -1,6 +1,7 @@
 {
   "name": "ScanLines",
   "description": "赛博朋克风格扫描线覆盖层，CRT 显示器扫描线效果",
+  "requires": { "data": [] },
   "params": {
     "opacity": {
       "type": "number",

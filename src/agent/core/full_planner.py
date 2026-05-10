@@ -1,5 +1,6 @@
 """
-VibePV 视觉计划生成器 (渐进式披露第二阶段)
+全量视觉计划生成器
+根据所选零件和音频数据，生成完整的 VisualPlan JSON。
 """
 import json
 from llm_client import call_llm
@@ -34,7 +35,7 @@ def build_stage2_details(component_names):
 
 
 def build_system_msg(adata, component_names):
-    """构建第二阶段系统消息，动态描述可用数据"""
+    """构建全量生成的系统消息"""
     audio_file = adata.get("audio_file", "")
     duration_ms = adata.get("audio_duration_ms", 0)
     total_frames = int(duration_ms / 1000 * 30) if duration_ms else 0
@@ -83,7 +84,7 @@ async def generate_visual_plan(adata, user_prompt, component_names, model=None):
 
     design_pv_tool = [t for t in TOOL_CATALOG if t["function"]["name"] == "design_pv"]
     active_model = model or "deepseek-v4-pro"
-    print(f"[Planner] 生成视觉计划... (模型: {active_model})")
+    print(f"[Planner] 全量生成视觉计划... (模型: {active_model})")
     response = await call_llm(messages, design_pv_tool, model=active_model)
     choice = response["choices"][0]
     msg = choice["message"]

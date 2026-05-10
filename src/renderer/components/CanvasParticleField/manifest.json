@@ -1,6 +1,7 @@
 {
   "name": "ParticleField",
   "description": "Canvas 2D 粒子场，霓虹光电粒子漂浮效果",
+  "requires": { "data": [] },
   "params": {
     "particleCount": {
       "type": "integer",

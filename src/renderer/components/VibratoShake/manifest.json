@@ -1,6 +1,7 @@
 {
   "name": "VibratoShake",
   "description": "画面震动特效，用于核嗓、音MAD等激烈风格",
+  "requires": { "data": [] },
   "params": {
     "intensity": {
       "type": "number",

@@ -1,6 +1,7 @@
 {
   "name": "VinylRecord",
   "description": "旋转唱片机效果，黑胶唱片带沟槽纹理、中心标签和模拟高光反射",
+  "requires": { "data": [] },
   "params": {
     "rpm": {
       "type": "number",

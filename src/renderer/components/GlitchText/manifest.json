@@ -1,6 +1,7 @@
 {
   "name": "GlitchText",
   "description": "故障风字幕覆盖层，提供赛博朋克风格的文字撕裂、RGB 偏移和随机闪烁效果",
+  "requires": { "data": ["lyrics.words", "bpm"] },
   "params": {
     "intensity": {
       "type": "number",

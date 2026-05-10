@@ -1,6 +1,7 @@
 {
   "name": "CircularSpectrum",
   "description": "环形音频频谱，频谱条从圆心向外辐射，随音乐节奏跳动",
+  "requires": { "data": ["audio_file"] },
   "params": {
     "audioFile": {
       "type": "string",
