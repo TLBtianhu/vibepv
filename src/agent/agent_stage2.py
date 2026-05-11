@@ -1,6 +1,5 @@
 """
 VibePV Agent 阶段二：视觉计划生成
-
 用法:
   全量生成: python src/agent/agent_stage2.py <输出JSON路径> --components-file output/component_selection.json --prompt '风格描述'
   增量生成: python src/agent/agent_stage2.py <输出JSON路径> --components-file output/component_selection.json --edit-target output/edit_target.json
@@ -8,6 +7,7 @@ VibePV Agent 阶段二：视觉计划生成
 import sys
 import json
 import os
+import shutil
 import asyncio
 from services.data_scanner import scan_data_sources
 from core.component_selector import load_selection
@@ -77,10 +77,31 @@ async def run():
         raise RuntimeError("未能生成有效的视觉计划")
 
     result = {"visual_plan": visual_plan}
+
+    # 1. 保存到 output/ 目录
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
-
     print(f"[Agent] 视觉计划已保存至 {output_path}")
+
+    # 2. 自动拷贝到 renderer/public/ (供 Remotion Studio 使用)
+    ui_dir = os.path.join("src", "renderer", "public")
+    os.makedirs(ui_dir, exist_ok=True)
+    ui_path = os.path.join(ui_dir, "visual_params.json")
+    try:
+        shutil.copy2(output_path, ui_path)
+        print(f"[Agent] 已同步拷贝至 {ui_path}（Remotion Studio 可自动读取）")
+    except Exception as e:
+        print(f"[Agent] 拷贝到 Remotion 目录失败（可忽略）: {e}")
+
+    # 3. 自动拷贝到 vibe_ui/public/ (供独立 UI 项目使用)
+    vibe_ui_dir = os.path.join("vibe_ui", "public")
+    os.makedirs(vibe_ui_dir, exist_ok=True)
+    vibe_ui_path = os.path.join(vibe_ui_dir, "visual_params.json")
+    try:
+        shutil.copy2(output_path, vibe_ui_path)
+        print(f"[Agent] 已同步拷贝至 {vibe_ui_path}（独立 UI 可自动读取）")
+    except Exception as e:
+        print(f"[Agent] 拷贝到 vibe_ui 目录失败（可忽略）: {e}")
 
 
 if __name__ == "__main__":

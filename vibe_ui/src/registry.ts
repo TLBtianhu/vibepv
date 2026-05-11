@@ -1,6 +1,5 @@
-// C:\vibepv\src\renderer\src\app\componentRegistry.ts（覆盖）
 import type { ComponentType } from "react";
-import type { ComponentMeta } from "./types";
+import type { ComponentMeta } from "../../src/renderer/src/app/types";
 
 export type RegistryEntry = {
   component: ComponentType<any>;
@@ -9,12 +8,16 @@ export type RegistryEntry = {
 
 export const componentRegistry: Record<string, RegistryEntry> = {};
 
-// Webpack 原生批量导入，自动扫描 components 目录下所有子文件夹中的 Component.tsx
-const context = require.context("../../components", true, /Component\.tsx$/);
+// Vite 方式的批量导入
+const modules = import.meta.glob(
+  "../../src/renderer/components/*/Component.tsx",
+  { eager: true }
+);
 
-for (const key of context.keys()) {
-  const mod = context(key);
-  const folderName = key.split("/")[1];   // 如 './AnimatedGradient/Component.tsx' -> 'AnimatedGradient'
+for (const [filePath, module] of Object.entries(modules)) {
+  const mod = module as any;
+  // 从路径中提取文件夹名，例: '../../src/renderer/components/AnimatedGradient/Component.tsx' -> 'AnimatedGradient'
+  const folderName = filePath.split("/").slice(-2)[0];
 
   const component = mod[folderName];
   const metaName = folderName.charAt(0).toLowerCase() + folderName.slice(1) + "Meta";
