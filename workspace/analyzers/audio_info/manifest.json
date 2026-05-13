@@ -1,0 +1,16 @@
+{
+  "name": "audio_info",
+  "description": "音频基础信息提取（文件名、时长）",
+  "produces": {
+    "audio_file": {
+      "file": "output/audio_info.json",
+      "field": "audio_file",
+      "required_by": ["AudioPlayer", "CircularSpectrum", "LyricsVideo"]
+    },
+    "audio_duration_ms": {
+      "file": "output/audio_info.json",
+      "field": "audio_duration_ms",
+      "required_by": ["Root", "RuleRenderer"]
+    }
+  }
+}

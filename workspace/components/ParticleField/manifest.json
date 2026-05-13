@@ -1,0 +1,43 @@
+{
+  "name": "ParticleField",
+  "description": "Canvas 2D 粒子场，霓虹光电粒子漂浮效果",
+  "requires": {
+    "data": []
+  },
+  "params": {
+    "particleCount": {
+      "type": "integer",
+      "default": 60,
+      "min": 1,
+      "max": 120,
+      "description": "粒子数量（最大120）"
+    },
+    "color": {
+      "type": "string",
+      "default": "#ff00ff",
+      "description": "粒子主色"
+    },
+    "colorSecondary": {
+      "type": "string",
+      "default": null,
+      "description": "次要颜色（可选，设置后启动颜色动画）"
+    },
+    "sizeRange": {
+      "type": "array",
+      "default": [1, 6],
+      "description": "粒子大小范围 [最小尺寸, 最大尺寸]"
+    },
+    "speedRange": {
+      "type": "array",
+      "default": [0.3, 1.5],
+      "description": "移动速度范围 [最小速度, 最大速度]"
+    },
+    "opacity": {
+      "type": "number",
+      "default": 0.6,
+      "min": 0,
+      "max": 1,
+      "description": "粒子透明度（0~1的小数）"
+    }
+  }
+}

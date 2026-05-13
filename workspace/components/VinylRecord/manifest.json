@@ -1,0 +1,32 @@
+{
+  "name": "VinylRecord",
+  "description": "旋转唱片机效果，黑胶唱片带沟槽纹理、中心标签和模拟高光反射",
+  "requires": { "data": [] },
+  "params": {
+    "rpm": {
+      "type": "number",
+      "default": 33.3,
+      "description": "转速（圈/分钟），标准 LP 为 33.3，EP 为 45"
+    },
+    "vinylColor": {
+      "type": "string",
+      "default": "#1a1a1a",
+      "description": "唱片底色（十六进制颜色值）"
+    },
+    "grooveColor": {
+      "type": "string",
+      "default": "#2a2a2a",
+      "description": "沟槽颜色（十六进制颜色值）"
+    },
+    "labelColor": {
+      "type": "string",
+      "default": "#f5e6c8",
+      "description": "中心标签颜色（十六进制颜色值）"
+    },
+    "size": {
+      "type": "number",
+      "default": 600,
+      "description": "唱片直径（像素）"
+    }
+  }
+}

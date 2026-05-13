@@ -1,0 +1,38 @@
+{
+  "name": "CircularSpectrum",
+  "description": "环形音频频谱，频谱条从圆心向外辐射，随音乐节奏跳动",
+  "requires": { "data": ["audio_file"] },
+  "params": {
+    "audioFile": {
+      "type": "string",
+      "description": "音频文件名，需与 analysis.json 中的 audio_file 字段一致"
+    },
+    "radius": {
+      "type": "number",
+      "default": 300,
+      "description": "频谱圆环的半径（像素）"
+    },
+    "barCount": {
+      "type": "integer",
+      "default": 64,
+      "description": "频谱条数（必须是2的幂，如 32、64、128）"
+    },
+    "maxHeight": {
+      "type": "number",
+      "default": 80,
+      "description": "频谱条的最大高度（像素）"
+    },
+    "color": {
+      "type": "string",
+      "default": "#00ffff",
+      "description": "频谱颜色，十六进制颜色值"
+    },
+    "opacity": {
+      "type": "number",
+      "default": 0.8,
+      "min": 0,
+      "max": 1,
+      "description": "整体透明度"
+    }
+  }
+}

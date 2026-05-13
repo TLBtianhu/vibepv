@@ -1,0 +1,11 @@
+{
+  "name": "bpm_detector",
+  "description": "BPM 检测（DeepRhythm）",
+  "produces": {
+    "bpm": {
+      "file": "output/bpm.json",
+      "field": "bpm",
+      "required_by": ["merge_sentences", "CircularSpectrum", "VinylRecord"]
+    }
+  }
+}
