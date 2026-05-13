@@ -1,5 +1,0 @@
-{
-  "name": "AudioPlayer",
-  "description": "独立音频播放组件（不显示任何内容，只播放音频）",
-  "params": {}
-}

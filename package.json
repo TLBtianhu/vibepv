@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@remotion/player": "^4.0.459",
+    "remotion": "^4.0.459",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  }
+}
